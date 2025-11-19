@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minhas Disciplinas | Engenharia de Software</title>
+
+<style>
+/* Layout geral */
+body {
+    margin: 0;
+    display: flex;
+    height: 100vh;
+    background: #0b1120;
+    font-family: "Inter", sans-serif;
+    color: #e6eef6;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 260px;
+    background: #0f172a;
+    padding: 28px 22px;
+    border-right: 1px solid rgba(255,255,255,0.05);
+}
+
+.sidebar h2 {
+    font-size: 20px;
+    margin-bottom: 25px;
+    color: #6ee7b7;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    padding: 12px 14px;
+    margin-bottom: 6px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.sidebar li:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+.sidebar li.active {
+    background: rgba(255,255,255,0.15);
+    color: #6ee7b7;
+}
+
+/* CONTEÚDO */
+.content {
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+}
+
+h1 {
+    font-size: 34px;
+    margin-bottom: 25px;
+}
+
+/* GRID */
+.semestre-title {
+    margin: 25px 0 10px;
+    font-size: 22px;
+    color: #7dd3fc;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 18px;
+}
+
+/* CARD */
+.card {
+    background: #111829;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+    cursor: pointer;
+    transition: transform .2s, background .2s;
+}
+
+.card:hover {
+    transform: scale(1.03);
+    background: #162036;
+}
+
+.card h3 {
+    margin-top: 0;
+    font-size: 18px;
+}
+
+.card p {
+    color: #94a3b8;
+    font-size: 14px;
+    margin: 8px 0 14px;
+}
+
+/* BADGES */
+.ch {
+    font-size: 13px;
+    color: #7dd3fc;
+}
+
+.badge {
+    font-size: 12px;
+    background: #222c41;
+    padding: 6px 10px;
+    border-radius: 6px;
+    color: #6ee7b7;
+}
+</style>
+</head>
+
+<body>
+<!-- ============================================================
+   CONTEÚDO
+============================================================ -->
+<div class="content">
+    <h1>Minhas Disciplinas</h1>
+    <div id="disciplinas"></div>
+</div>
+
+<!-- ============================================================
+   SCRIPT
+============================================================ -->
+<script>
+function go(page){
+    window.location.href = page;
+}
+
+/* ============================================================
+   MATRIZ COMPLETA — ESTÁCIO
+============================================================ */
+const matriz = [
+    {
+        semestre: "1° Semestre",
+        disciplinas: [
+            { nome: "Algoritmos e Lógica de Programação", desc: "Fundamentos iniciais da programação.", ch: "80h", status: "Cursando", link: "algoritmos.html" },
+            { nome: "Introdução à Engenharia de Software", desc: "Conceitos pessoais e áreas da computação.", ch: "60h", status: "Cursando", link: "intro_es.html" },
+            { nome: "Leitura e Produção de Textos", desc: "Comunicação e escrita acadêmica.", ch: "60h", status: "Cursando", link: "lpt.html" },
+            { nome: "Cálculo I", desc: "Limites, derivadas e aplicações.", ch: "80h", status: "Cursando", link: "calculo1.html" },
+            { nome: "Computação e Sociedade", desc: "Impactos da tecnologia na sociedade moderna.", ch: "60h", status: "Cursando", link: "comp_sociedade.html" }
+        ]
+    },
+
+    {
+        semestre: "2° Semestre",
+        disciplinas: [
+            { nome: "Programação Estruturada", desc: "Funções, variáveis e controle de fluxo.", ch: "80h", status: "Pendente", link: "prog_estruturada.html" },
+            { nome: "Arquitetura de Computadores", desc: "Funcionamento interno de computadores.", ch: "80h", status: "Pendente", link: "arquitetura.html" },
+            { nome: "Cálculo II", desc: "Integrais e aplicações.", ch: "80h", status: "Pendente", link: "calculo2.html" },
+            { nome: "Sociedade e Inovação", desc: "Tecnologia, futuro e ética.", ch: "60h", status: "Pendente", link: "inovacao.html" }
+        ]
+    },
+
+    {
+        semestre: "3° Semestre",
+        disciplinas: [
+            { nome: "Programação Orientada a Objetos", desc: "Classes, objetos e abstrações.", ch: "80h", status: "Pendente", link: "poo.html" },
+            { nome: "Banco de Dados I", desc: "Modelagem e SQL.", ch: "80h", status: "Pendente", link: "bd1.html" },
+            { nome: "Probabilidade e Estatística", desc: "Variáveis e distribuições.", ch: "60h", status: "Pendente", link: "estatistica.html" },
+            { nome: "Engenharia de Requisitos", desc: "Levantamento e documentação.", ch: "60h", status: "Pendente", link: "requisitos.html" }
+        ]
+    }
+];
+
+/* ============================================================
+   RENDERIZAÇÃO AUTOMÁTICA
+============================================================ */
+const container = document.getElementById("disciplinas");
+
+matriz.forEach(sem => {
+    container.innerHTML += `<h2 class='semestre-title'>${sem.semestre}</h2>`;
+    container.innerHTML += `<div class='grid'>`;
+
+    sem.disciplinas.forEach(d => {
+        container.innerHTML += `
+            <div class="card" onclick="go('disciplinas/${d.link}')">
+                <h3>${d.nome}</h3>
+                <p>${d.desc}</p>
+                <span class="ch">Carga Horária: ${d.ch}</span><br>
+                <span class="badge">${d.status}</span>
+            </div>
+        `;
+    });
+
+    container.innerHTML += `</div>`;
+});
+</script>
+
+</body>
+</html>

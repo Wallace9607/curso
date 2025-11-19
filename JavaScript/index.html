@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curso de JavaScript</title>
+    <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-image: url(img/1555172.jpg);
+    background-color: rgba(0, 0, 0, 0.4);
+    background-blend-mode: multiply;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    padding: 20px;
+}
+
+h1 {
+    color: #eeeb34;
+    font-size: 5rem;
+    text-align: center;
+    margin: 60px 40px;
+}
+
+.container {
+    
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.card {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 10px;
+    width: 300px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+    cursor: pointer;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+h2 {
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+p {
+    font-size: 1rem;
+    color: #666;
+}
+
+    </style>
+</head>
+<body>
+    <h1>JavaScript</h1>
+    <div class="container">
+        <div class="card" onclick="navigateTo('introducao.html')">
+            <h2>Introdução JavaScript</h2>
+            <p>Entenda os fundamentos do JavaScript e suas aplicações iniciais.</p>
+        </div>
+        <div class="card" onclick="navigateTo('tipos_comparacoes.html')">
+            <h2>Tipos e Comparações</h2>
+            <p>Entenda os tipos de dados e como realizar comparações em JavaScript.</p>
+        </div>
+        <div class="card" onclick="navigateTo('condicoes.html')">
+            <h2>Condicionais</h2>
+            <p>Aprenda a tomar decisões com if, else e switch.</p>
+        </div>
+        <div class="card" onclick="navigateTo('loops.html')">
+            <h2>Loops</h2>
+            <p>Veja como repetir blocos de código com for, while e do...while.</p>
+        </div>
+        <div class="card" onclick="navigateTo('arrays.html')">
+            <h2>Arrays</h2>
+            <p>Descubra como manipular coleções de dados com arrays.</p>
+        </div>
+        <div class="card" onclick="navigateTo('funcoes.html')">
+            <h2>Funções</h2>
+            <p>Saiba como criar e utilizar funções em JavaScript.</p>
+        </div>
+        <div class="card" onclick="navigateTo('objetos.html')">
+            <h2>Objetos</h2>
+            <p>Aprenda sobre objetos, a base da programação orientada a objetos.</p>
+        </div>
+        <div class="card" onclick="navigateTo('funcoes_aplicadas.html')">
+            <h2>Funções Aplicadas</h2>
+            <p>Explore como aplicar funções em diferentes contextos.</p>
+        </div>
+        <div class="card" onclick="navigateTo('es6.html')">
+            <h2>ES6</h2>
+            <p>Conheça as novidades do ECMAScript 6, como let, const, arrow functions.</p>
+        </div>
+        <div class="card" onclick="navigateTo('operacoes_array.html')">
+            <h2>Operações de Array</h2>
+            <p>Utilize métodos avançados de array como map, filter e reduce.</p>
+        </div>
+        <div class="card" onclick="navigateTo('paginas_web.html')">
+            <h2>Páginas da Web</h2>
+            <p>Integre JavaScript com HTML para criar páginas web dinâmicas.</p>
+        </div>
+        <div class="card" onclick="navigateTo('dom.html')">
+            <h2>Modelo de Objeto do Documento (DOM)</h2>
+            <p>Manipule a estrutura de uma página HTML através do DOM.</p>
+        </div>
+        <div class="card" onclick="navigateTo('eventos.html')">
+            <h2>Eventos JavaScript</h2>
+            <p>Adicione interatividade através de eventos como cliques e teclas.</p>
+        </div>
+        <div class="card" onclick="navigateTo('sincronia_assincronia.html')">
+            <h2>Sincronia e Assincronia</h2>
+            <p>Entenda como lidar com o comportamento assíncrono em JavaScript.</p>
+        </div>
+        <div class="card" onclick="navigateTo('modulos.html')">
+            <h2>JavaScript Módulos</h2>
+            <p>Divida seu código em partes reutilizáveis com módulos ES6.</p>
+        </div>
+        <div class="card" onclick="navigateTo('bibliotecas_no.html')">
+            <h2>Bibliotecas e Node.js</h2>
+            <p>Veja como utilizar bibliotecas e rodar JavaScript no servidor com Node.js.</p>
+        </div>
+    </div>
+
+    <script>
+        function navigateTo(page) {
+            window.location.href = `pages/${page}`;
+        }
+    </script>
+</body>
+</html>

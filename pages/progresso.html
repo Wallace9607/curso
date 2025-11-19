@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Grade Interativa — Engenharia de Software</title>
+  <style>
+    :root{
+      --bg:#0f1724; /* dark navy */
+      --card:#0b1220;
+      --muted:#9aa4b2;
+      --accent:#6ee7b7;
+      --accent-2:#7dd3fc;
+      --glass: rgba(255,255,255,0.04);
+      --success:#22c55e;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;padding:28px;background:#071028;color:#e6eef6;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
+    header{display:flex;gap:16px;align-items:center;margin-bottom:20px}
+    .logo{display:flex;align-items:center;gap:12px}
+    .logo svg{width:56px;height:56px}
+    h1{margin:0;font-size:20px}
+    p.lead{margin:0;color:var(--muted);font-size:13px}
+
+    .container{display:grid;grid-template-columns:360px 1fr;gap:20px}
+
+    /* left column */
+    .sidebar{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:18px;border-radius:14px;box-shadow:0 6px 20px rgba(2,6,23,0.6)}
+    .progress-overview{display:flex;flex-direction:column;gap:12px}
+    .big-progress{display:flex;align-items:center;gap:12px}
+    .progress-ring{width:96px;height:96px;border-radius:50%;background:conic-gradient(var(--accent) 0% 30%, rgba(255,255,255,0.06) 30%);display:grid;place-items:center;font-weight:700;color:#061422}
+    .meta small{color:var(--muted)}
+
+    .goals{margin-top:8px;border-radius:10px;padding:10px;background:var(--glass)}
+    .goals h3{margin:0;font-size:13px}
+    .goal-item{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:13px;color:var(--muted)}
+    .goal-item input[type=checkbox]{transform:scale(1.1)}
+
+    .controls{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+    button.btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:9px;color:var(--accent-2);cursor:pointer}
+    button.ghost{border-style:dashed}
+
+    /* main grid */
+    main{min-height:70vh}
+    .grid-semesters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .semester{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+    .semester h2{margin:0;font-size:15px}
+    .semester .sub{font-size:12px;color:var(--muted);margin-top:6px}
+    .courses{margin-top:12px;display:grid;gap:8px}
+
+    .course{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02)}
+    .course .left{display:flex;gap:10px;align-items:center}
+    .badge{width:10px;height:10px;border-radius:50%}
+    .course .meta{min-width:0}
+    .course .meta strong{display:block;font-size:14px}
+    .course .meta small{color:var(--muted)}
+    .course .actions{display:flex;gap:8px;align-items:center}
+    .pill{padding:6px 8px;border-radius:999px;font-size:12px;border:1px solid rgba(255,255,255,0.03)}
+
+    footer{margin-top:18px;color:var(--muted);font-size:13px}
+
+    /* responsive */
+    @media (max-width:980px){.container{grid-template-columns:1fr;}.grid-semesters{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="64" height="64" rx="12" fill="#061122"/>
+        <path d="M18 44h28V20H18v24z" fill="#072431"/>
+        <path d="M22 24h20v6H22z" fill="#7dd3fc"/>
+        <path d="M22 32h12v10H22z" fill="#6ee7b7"/>
+      </svg>
+    </div>
+    <div>
+      <h1>Curso — Engenharia de Software (grade interativa)</h1>
+      <p class="lead">Painel para acompanhar semestres, marcar progresso e planejar metas semanais.</p>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <aside class="sidebar">
+      <div class="progress-overview">
+        <div class="big-progress">
+          <div class="progress-ring" id="ring">0%</div>
+          <div class="meta">
+            <div style="font-weight:700;font-size:15px">Progresso do curso</div>
+            <small id="completed-summary">0 de 64 disciplinas concluídas</small>
+          </div>
+        </div>
+
+        <div class="goals">
+          <h3>Metas Semanais</h3>
+          <div id="goals-list">
+            <!-- dynamic -->
+          </div>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <input id="new-goal" placeholder="Nova meta (ex: Estudar 2h SO)" style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit">
+            <button class="btn" id="add-goal">Adicionar</button>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="btn" id="reset-btn">Redefinir status</button>
+          <button class="btn ghost" id="export-btn">Exportar JSON</button>
+        </div>
+      </div>
+
+      <footer>
+        <div style="font-weight:600">Notas</div>
+        <div style="margin-top:8px;color:var(--muted);font-size:13px">Clique no ícone de check para marcar disciplina concluída. O painel salva automaticamente no armazenamento local do navegador.</div>
+      </footer>
+    </aside>
+
+    <main>
+      <section class="grid-semesters" id="semesters-grid">
+        <!-- semesters injected here -->
+      </section>
+    </main>
+
+  </div>
+
+  <script>
+    /* --- Dados do curso (8 semestres) --- */
+    const curriculum = [
+      {title:'1º Semestre', courses:[
+        'Introdução à Computação e Engenharia de Software','Lógica de Programação e Algoritmos','Matemática Discreta','Fundamentos de Programação (Python)','Arquitetura e Organização de Computadores','Inglês Técnico para Programadores','Fundamentos de Sistemas Operacionais','Projeto 1: Mini Sistema de Cadastro'
+      ]},
+      {title:'2º Semestre', courses:[
+        'Estruturas de Dados e Análise de Algoritmos','Programação Orientada a Objetos (Java/C#)','Desenvolvimento Web (HTML/CSS/JS)','Banco de Dados Relacional (SQL)','Engenharia de Requisitos e UML','Testes e Qualidade de Software','Versionamento com Git','Projeto 2: Sistema Web CRUD'
+      ]},
+      {title:'3º Semestre', courses:[
+        'Engenharia de Software Avançada','Arquitetura de Software e Design Patterns','Desenvolvimento Backend (Node/Java/Python)','Desenvolvimento Frontend (React/Vue)','Banco de Dados Não Relacional (NoSQL)','DevOps e CI/CD','Segurança da Informação','Projeto 3: App Full Stack em Nuvem'
+      ]},
+      {title:'4º Semestre', courses:[
+        'Sistemas Distribuídos e Microserviços','Integração Contínua e Observabilidade','Modelagem de Domínio e DDD','Testes Automatizados e TDD','Performance e Escalabilidade','APIs e Contratos (OpenAPI)','Mobile Básico (Flutter/React Native)','Projeto 4: Microserviços e API'
+      ]},
+      {title:'5º Semestre', courses:[
+        'Banco de Dados Avançado e Indexação','Computação em Nuvem e Arquitetura Serverless','Segurança Aplicada e Criptografia','UX/UI e Design de Produto','Metodologias Ágeis (Scrum, Kanban)','Análise de Requisitos Avançada','Pesquisa Operacional/Algoritmos','Projeto 5: Produto com UX'
+      ]},
+      {title:'6º Semestre', courses:[
+        'Inteligência Artificial e Machine Learning','Ciência de Dados e Visualização','Big Data e Pipelines','IoT e Sistemas Embarcados','Gerência de Configuração e Releases','Governança de Software','Ética em IA e Privacidade','Projeto 6: Pipeline de Dados/ML'
+      ]},
+      {title:'7º Semestre', courses:[
+        'Arquitetura Corporativa e SOA','Escalabilidade e Arquitetura de Eventos','Testes de Segurança e Pentest','Empreendedorismo e Gestão de Produtos','Legislação e Governança de TI','Soft Skills e Liderança Técnica','Estágio Supervisionado I','Projeto 7: MVP para mercado'
+      ]},
+      {title:'8º Semestre', courses:[
+        'Tópicos Avançados em Engenharia de Software','DevSecOps e Observabilidade Avançada','Avaliação de Desempenho e Custo','Gestão de Projetos e Portfólios','Preparação para Carreira e Portfólio','Seminários e Pesquisa Aplicada','Estágio Supervisionado II','Projeto Final: Produto Completo (MVP+Docs)'
+      ]},
+    ];
+
+    /* --- Estado salvo no localStorage --- */
+    const STORAGE_KEY = 'es_course_state_v1';
+
+    function defaultState(){
+      const semesters = curriculum.map(s => s.courses.map(() => ({done:false})))
+      return {semesters, goals:[]}
+    }
+
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return defaultState();
+        const parsed = JSON.parse(raw);
+        // normalize length
+        if(!parsed.semesters) return defaultState();
+        return parsed;
+      }catch(e){console.error(e);return defaultState()}
+    }
+
+    let state = loadState();
+
+    /* --- Renderiza semestre + cursos --- */
+    const grid = document.getElementById('semesters-grid');
+    const ring = document.getElementById('ring');
+    const completedSummary = document.getElementById('completed-summary');
+
+    function render(){
+      grid.innerHTML='';
+      curriculum.forEach((sem,si)=>{
+        const div = document.createElement('section'); div.className='semester';
+        const h = document.createElement('h2'); h.textContent = sem.title; div.appendChild(h);
+        const sub = document.createElement('div'); sub.className='sub'; sub.textContent = `${sem.courses.length} disciplinas`; div.appendChild(sub);
+
+        const coursesWrap = document.createElement('div'); coursesWrap.className='courses';
+        sem.courses.forEach((c,ci)=>{
+          const course = document.createElement('div'); course.className='course';
+          const left = document.createElement('div'); left.className='left';
+          const dot = document.createElement('div'); dot.className='badge'; dot.style.background = state.semesters[si] && state.semesters[si][ci] && state.semesters[si][ci].done ? 'linear-gradient(90deg,var(--accent),var(--accent-2))' : 'rgba(255,255,255,0.04)';
+          const meta = document.createElement('div'); meta.className='meta';
+          const title = document.createElement('strong'); title.textContent = c;
+          const small = document.createElement('small'); small.textContent = '';
+          meta.appendChild(title); meta.appendChild(small);
+          left.appendChild(dot); left.appendChild(meta);
+
+          const actions = document.createElement('div'); actions.className='actions';
+          const btn = document.createElement('button'); btn.className='pill'; btn.textContent = state.semesters[si] && state.semesters[si][ci] && state.semesters[si][ci].done ? 'Concluída' : 'Marcar';
+          btn.onclick = ()=>{ toggleCourse(si,ci); }
+
+          const info = document.createElement('span'); info.style.fontSize='12px'; info.style.color='var(--muted)'; info.textContent = `Sem ${si+1}`;
+
+          actions.appendChild(info); actions.appendChild(btn);
+          course.appendChild(left); course.appendChild(actions);
+          coursesWrap.appendChild(course);
+        })
+
+        div.appendChild(coursesWrap);
+        grid.appendChild(div);
+      })
+
+      updateProgressUI();
+      renderGoals();
+      saveState();
+    }
+
+    function toggleCourse(si,ci){
+      state.semesters[si][ci].done = !state.semesters[si][ci].done;
+      render();
+    }
+
+    function updateProgressUI(){
+      const flat = state.semesters.flat();
+      const total = flat.length;
+      const done = flat.filter(x=>x.done).length;
+      const pct = Math.round((done/total)*100);
+      ring.textContent = pct + '%';
+      ring.style.background = `conic-gradient(var(--accent) 0% ${pct}%, rgba(255,255,255,0.04) ${pct}% 100%)`;
+      completedSummary.textContent = `${done} de ${total} disciplinas concluídas`;
+    }
+
+    /* --- Goals --- */
+    const goalsList = document.getElementById('goals-list');
+    const newGoalInput = document.getElementById('new-goal');
+    const addGoalBtn = document.getElementById('add-goal');
+
+    function renderGoals(){
+      goalsList.innerHTML='';
+      state.goals = state.goals || [];
+      if(state.goals.length===0){
+        const p = document.createElement('div'); p.style.color='var(--muted)'; p.style.fontSize='13px'; p.textContent='Nenhuma meta criada ainda.'; goalsList.appendChild(p); return;
+      }
+      state.goals.forEach((g,i)=>{
+        const row = document.createElement('div'); row.className='goal-item';
+        const left = document.createElement('div'); left.style.display='flex'; left.style.gap='8px'; left.style.alignItems='center';
+        const cb = document.createElement('input'); cb.type='checkbox'; cb.checked = !!g.done; cb.onchange = ()=>{ state.goals[i].done = cb.checked; saveState(); renderGoals(); }
+        const txt = document.createElement('div'); txt.textContent = g.text; if(g.done) txt.style.textDecoration='line-through'; txt.style.color = g.done ? 'var(--muted)' : 'inherit';
+        left.appendChild(cb); left.appendChild(txt);
+        const del = document.createElement('button'); del.className='btn'; del.textContent='Excluir'; del.onclick = ()=>{ state.goals.splice(i,1); saveState(); renderGoals(); }
+        row.appendChild(left); row.appendChild(del);
+        goalsList.appendChild(row);
+      })
+    }
+
+    addGoalBtn.onclick = ()=>{
+      const v = newGoalInput.value.trim(); if(!v) return; state.goals.push({text:v,done:false}); newGoalInput.value=''; saveState(); renderGoals();
+    }
+
+    /* --- Persistence and export/reset --- */
+    function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+    document.getElementById('reset-btn').onclick = ()=>{
+      if(!confirm('Redefinir todos os status para não concluído?')) return;
+      state = defaultState(); saveState(); render();
+    }
+    document.getElementById('export-btn').onclick = ()=>{
+      const data = JSON.stringify(state,null,2);
+      const blob = new Blob([data],{type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'es_course_state.json'; a.click(); URL.revokeObjectURL(url);
+    }
+
+    /* --- Initialize state shape if older version lacks fields --- */
+    function normalizeState(){
+      if(!state.semesters || state.semesters.length !== curriculum.length){
+        state = defaultState();
+      } else {
+        // ensure each semester has correct length
+        state.semesters = curriculum.map((s,si)=>{
+          const prev = state.semesters[si] || [];
+          return s.courses.map((_,ci)=> prev[ci] || {done:false} );
+        })
+        state.goals = state.goals || [];
+      }
+    }
+
+    normalizeState(); render();
+
+    // quick hint: keyboard shortcut to open export
+    window.addEventListener('keydown', (e)=>{ if(e.key==='e' && (e.ctrlKey||e.metaKey)){ e.preventDefault(); document.getElementById('export-btn').click(); } })
+  </script>
+</body>
+</html>clique no

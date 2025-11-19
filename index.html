@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Painel — Engenharia de Software</title>
+
+<style>
+/* ---------- TEMA GLOBAL ---------- */
+:root{
+  --bg:#0b1120;
+  --card:#111829;
+  --text:#e6eef6;
+  --muted:#94a3b8;
+  --accent:#6ee7b7;
+  --accent-2:#7dd3fc;
+  font-family:"Inter",sans-serif;
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  display:flex;
+  height:100vh;
+  overflow:hidden;
+}
+
+/* ---------- SIDEBAR ---------- */
+.sidebar{
+  width:260px;
+  background:#0f172a;
+  padding:28px 22px;
+  display:flex;
+  flex-direction:column;
+  gap:28px;
+  border-right:1px solid rgba(255,255,255,0.05);
+}
+
+.logo{
+  font-size:20px;
+  font-weight:700;
+  letter-spacing:-0.5px;
+}
+
+.nav{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.nav a{
+  padding:12px 14px;
+  border-radius:10px;
+  color:var(--muted);
+  text-decoration:none;
+  font-size:15px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.nav a.active{
+  background:rgba(255,255,255,0.1);
+  color:var(--accent);
+}
+
+.nav a:hover{
+  background:rgba(255,255,255,0.05);
+  color:var(--accent);
+}
+
+/* ---------- MAIN (ÁREA DINÂMICA) ---------- */
+main{
+  flex:1;
+  padding:32px;
+  overflow-y:auto;
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">Engenharia</div>
+
+  <nav class="nav">
+    <a onclick="loadPage('home')" id="m-home">🏠 Home</a>
+    <a onclick="loadPage('minhas_disciplinas')" id="m-disciplinas">📘 Minhas Disciplinas</a>
+    <a onclick="loadPage('cursos_complementares')" id="m-cursos">🎓 Cursos Complementares</a>
+    <a onclick="loadPage('exercicios')" id="m-exercicios">📝 Exercícios</a>
+    <a onclick="loadPage('avaliacoes')" id="m-avaliacoes">📊 Avaliações</a>
+    <a onclick="loadPage('calendario')" id="m-calendario">📆 Calendário Acadêmico</a>
+    <a onclick="loadPage('biblioteca')" id="m-biblioteca">📚 Biblioteca</a>
+    <a onclick="loadPage('projetos')" id="m-projetos">💡 Projetos</a>
+    <a onclick="loadPage('progresso')" id="m-progresso">📈 Progresso</a>
+  </nav>
+</aside>
+
+<!-- MAIN: CONTEÚDO QUE TROCA -->
+<main id="content">
+  Carregando interface...
+</main>
+
+<script src="js/app.js"></script>
+<script src="js/data.js"></script>
+
+<script>
+loadPage("home");
+</script>
+
+</body>
+</html>
