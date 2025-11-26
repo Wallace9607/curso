@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Cursos Complementares</title>
+  <meta name="description" content="Página responsiva de cursos complementares - cartões com detalhes, busca e filtro.">
+  <style>
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --muted:#94a3b8;
+      --accent:#7c3aed;
+      --glass: rgba(255,255,255,0.03);
+      --radius:14px;
+      --maxwidth:1200px;
+      --gap:20px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg,#071027 0%, #07142a 60%);
+      color:#e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:32px;
+      display:flex;
+      justify-content:center;
+    }
+    .wrap{
+      width:100%;
+      max-width:var(--maxwidth);
+    }
+    header{
+      display:flex;
+      gap:16px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:24px;
+    }
+    .brand{
+      display:flex;align-items:center;gap:12px
+    }
+    .logo{
+      width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#4f46e5);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;box-shadow:0 6px 20px rgba(124,58,237,0.18)
+    }
+    h1{font-size:1.25rem;margin:0}
+    p.lead{margin:0;color:var(--muted);font-size:0.95rem}
+
+    .controls{
+      display:flex;gap:12px;align-items:center
+    }
+    .search{
+      background:var(--glass);border:1px solid rgba(255,255,255,0.04);padding:8px 12px;border-radius:12px;display:flex;align-items:center;gap:8px;min-width:220px
+    }
+    .search input{background:transparent;border:0;color:inherit;outline:0;font-size:0.95rem;width:160px}
+    .select, .btn{
+      background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;color:inherit;cursor:pointer
+    }
+
+    main{
+      background:transparent;padding:6px;border-radius:10px
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(1,1fr);
+      gap:var(--gap);
+    }
+    /* responsive grid */
+    @media(min-width:640px){.grid{grid-template-columns:repeat(2,1fr)}}
+    @media(min-width:980px){.grid{grid-template-columns:repeat(3,1fr)}}
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.04);
+      padding:16px;border-radius:var(--radius);
+      display:flex;gap:14px;align-items:flex-start;transition:transform .22s ease, box-shadow .22s ease;min-height:110px
+    }
+    .card:focus-within, .card:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(2,6,23,0.6)}
+    .thumb{flex:0 0 92px;height:92px;border-radius:10px;overflow:hidden;background:linear-gradient(135deg,#203040, #2a3b56);display:flex;align-items:center;justify-content:center;font-weight:700}
+    .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .meta{flex:1}
+    .meta h3{margin:0 0 6px 0;font-size:1rem}
+    .meta p{margin:0;color:var(--muted);font-size:0.9rem}
+    .tags{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+    .tag{font-size:0.78rem;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.02)}
+    .card-actions{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+    .small{font-size:0.85rem;color:var(--muted)}
+
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:linear-gradient(180deg,rgba(2,6,23,0.6),rgba(2,6,23,0.8));display:none;align-items:center;justify-content:center;padding:24px;z-index:120}
+    .modal{background:linear-gradient(180deg,#071025,#08122a);border-radius:14px;padding:20px;max-width:780px;width:100%;box-shadow:0 30px 60px rgba(2,6,23,0.7);border:1px solid rgba(255,255,255,0.04)}
+    .modal.show{display:block}
+    .modal-header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .modal-body{margin-top:14px;color:var(--muted)}
+
+    /* empty state */
+    .empty{padding:40px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);text-align:center;color:var(--muted)}
+
+    /* small screens adjustments */
+    @media(max-width:420px){.search input{width:100px}.controls{flex-direction:column;align-items:flex-end}}
+
+    /* accessibility focus */
+    .btn:focus, .card:focus-within, .tag:focus{outline:3px solid rgba(124,58,237,0.18);outline-offset:3px}
+
+  </style>
+</head>
+<body>
+  <div class="wrap" id="app">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden>CC</div>
+        <div>
+          <h1>Cursos Complementares</h1>
+          <p class="lead">Aprenda novas habilidades com cursos curtos — totalmente responsivo.</p>
+        </div>
+      </div>
+
+      <div class="controls" role="region" aria-label="Controles de busca e filtro">
+        <div class="search" role="search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+            <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.6"></circle>
+          </svg>
+          <input id="q" type="search" placeholder="Buscar curso, tema..." aria-label="Buscar cursos">
+        </div>
+
+        <select id="category" class="select" aria-label="Filtrar por categoria">
+          <option value="all">Todas as categorias</option>
+        </select>
+
+        <button id="sortBtn" class="btn" aria-expanded="false">Ordenar: Popular</button>
+      </div>
+    </header>
+
+    <main>
+      <section id="grid" class="grid" aria-live="polite">
+        <!-- cards injected by JS -->
+      </section>
+
+      <div id="empty" class="empty" style="display:none">Nenhum curso encontrado. Tente outro termo de busca.</div>
+    </main>
+
+    <!-- modal -->
+    <div id="backdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="modal" role="document">
+        <div class="modal-header">
+          <div>
+            <h2 id="modal-title">Título do curso</h2>
+            <div class="small" id="modal-sub">Categoria • Duração</div>
+          </div>
+          <div>
+            <button id="closeModal" class="btn" aria-label="Fechar">Fechar</button>
+          </div>
+        </div>
+        <div class="modal-body" id="modal-body">
+          <!-- detalhes -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Dados de exemplo — substitua/adicione cursos aqui
+    const courses = [
+      {id:1,title:'Introdução ao Git e GitHub',category:'Desenvolvimento',thumb:'img/git.jpeg',duration:'4 horas',level:'Iniciante',desc:'Aprenda controle de versão com Git e colaboração com GitHub. Ideal para quem começa na programação.'},
+      {id:2,title:'Design Thinking para Inovação',category:'Design',thumb:'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=700&auto=format&fit=crop',duration:'6 horas',level:'Intermediário',desc:'Metodologias práticas para resolver problemas e criar soluções centradas no usuário.'},
+      {id:3,title:'Fundamentos de UX',category:'Design',thumb:'https://images.unsplash.com/photo-1517816743773-6e0fd518b4a6?q=80&w=700&auto=format&fit=crop',duration:'8 horas',level:'Iniciante',desc:'Bases de experiência do usuário: pesquisa, prototipagem e testes.'},
+      {id:4,title:'Python para Análise de Dados',category:'Dados',thumb:'https://images.unsplash.com/photo-1518779578993-ec3579fee39f?q=80&w=700&auto=format&fit=crop',duration:'12 horas',level:'Intermediário',desc:'Manipulação de dados com pandas, visualização e preparação para machine learning.'},
+      {id:5,title:'Marketing Digital Essencial',category:'Marketing',thumb:'https://images.unsplash.com/photo-1535378917041-14c0b6b3f968?q=80&w=700&auto=format&fit=crop',duration:'5 horas',level:'Iniciante',desc:'Estratégias práticas de marketing digital: SEO, redes sociais e anúncios.'},
+      {id:6,title:'Introdução a Segurança da Informação',category:'Segurança',thumb:'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=700&auto=format&fit=crop',duration:'7 horas',level:'Iniciante',desc:'Princípios de segurança, boas práticas e como proteger sistemas e dados.'},
+      {id:7,title:'SQL Básico',category:'Dados',thumb:'https://images.unsplash.com/photo-1537432376769-00a0a2a9a5b2?q=80&w=700&auto=format&fit=crop',duration:'3 horas',level:'Iniciante',desc:'Consultas SQL para extrair, filtrar e agrupar informações em bancos de dados relacionais.'}
+    ];
+
+    const app = document.getElementById('app');
+    const grid = document.getElementById('grid');
+    const q = document.getElementById('q');
+    const category = document.getElementById('category');
+    const empty = document.getElementById('empty');
+    const sortBtn = document.getElementById('sortBtn');
+
+    // popular categories
+    const categories = ['Todas as categorias', ...Array.from(new Set(courses.map(c=>c.category)))];
+    categories.forEach(cat=>{
+      const opt = document.createElement('option');
+      opt.value = cat==='Todas as categorias'? 'all': cat;
+      opt.textContent = cat;
+      category.appendChild(opt);
+    });
+
+    // render cards
+    function render(list){
+      grid.innerHTML = '';
+      if(!list.length){ empty.style.display='block'; return } else { empty.style.display='none' }
+      list.forEach(course=>{
+        const card = document.createElement('article');
+        card.className='card';
+        card.tabIndex=0;
+        card.innerHTML = `
+          <div class="thumb" aria-hidden>
+            <img loading="lazy" src="${course.thumb}" alt="Imagem do curso ${escapeHtml(course.title)}">
+          </div>
+          <div class="meta">
+            <h3>${escapeHtml(course.title)}</h3>
+            <p class="small">${escapeHtml(course.category)} • ${escapeHtml(course.level)} • ${escapeHtml(course.duration)}</p>
+            <p>${escapeHtml(truncate(course.desc,110))}</p>
+            <div class="tags">
+              <span class="tag">${escapeHtml(course.level)}</span>
+              <span class="tag">${escapeHtml(course.duration)}</span>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="btn" data-id="${course.id}">Ver detalhes</button>
+            <button class="btn" aria-label="Inscrever no curso ${escapeHtml(course.title)}">Inscrever</button>
+          </div>
+        `;
+        grid.appendChild(card);
+      })
+
+      // attach detail handlers
+      grid.querySelectorAll('button[data-id]').forEach(btn=>{
+        btn.addEventListener('click', (e)=> openModal(Number(e.currentTarget.dataset.id)));
+      });
+
+      // allow Enter on card to open details
+      grid.querySelectorAll('.card').forEach(card=>{
+        card.addEventListener('keydown', (e)=>{
+          if(e.key === 'Enter'){
+            const btn = card.querySelector('button[data-id]');
+            if(btn) btn.click();
+          }
+        })
+      })
+    }
+
+    // basic utilities
+    function truncate(str,n){ return str.length>n? str.slice(0,n-1)+'...': str }
+    function escapeHtml(str){ return String(str).replace(/[&<>"']/g, function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[m]}); }
+
+    // search & filter
+    function filterAndRender(){
+      const term = q.value.trim().toLowerCase();
+      const cat = category.value;
+      let list = courses.filter(c=>{
+        if(cat !== 'all' && c.category !== cat) return false;
+        if(!term) return true;
+        return (c.title + ' ' + c.desc + ' ' + c.category).toLowerCase().includes(term);
+      });
+      render(list);
+    }
+
+    q.addEventListener('input', debounce(filterAndRender,220));
+    category.addEventListener('change', filterAndRender);
+
+    // simple sorting toggle
+    let sorted = 'popular';
+    sortBtn.addEventListener('click', ()=>{
+      if(sorted === 'popular'){
+        sorted = 'recent';
+        sortBtn.textContent = 'Ordenar: Recentes';
+      } else {
+        sorted = 'popular';
+        sortBtn.textContent = 'Ordenar: Popular';
+      }
+      // fake sort: for demo we just reverse
+      const list = Array.from(courses);
+      if(sorted === 'recent') list.reverse();
+      render(list);
+    });
+
+    // modal logic
+    const backdrop = document.getElementById('backdrop');
+    const modalTitle = document.getElementById('modal-title');
+    const modalSub = document.getElementById('modal-sub');
+    const modalBody = document.getElementById('modal-body');
+    const closeModal = document.getElementById('closeModal');
+
+    function openModal(id){
+      const c = courses.find(x=>x.id===id);
+      if(!c) return;
+      modalTitle.textContent = c.title;
+      modalSub.textContent = `${c.category} • ${c.duration} • ${c.level}`;
+      modalBody.innerHTML = `<p>${escapeHtml(c.desc)}</p><p style="margin-top:12px" class="small">Conteúdo programático: <strong>Introdução • Exercícios • Projeto final</strong></p>`;
+      backdrop.style.display='flex';
+      backdrop.setAttribute('aria-hidden','false');
+      // trap focus: focus close button
+      closeModal.focus();
+    }
+    function close(){ backdrop.style.display='none'; backdrop.setAttribute('aria-hidden','true'); }
+    closeModal.addEventListener('click', close);
+    backdrop.addEventListener('click', (e)=>{ if(e.target === backdrop) close(); });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') close(); });
+
+    // helper: debounce
+    function debounce(fn,wait){ let t; return function(...a){ clearTimeout(t); t = setTimeout(()=>fn.apply(this,a), wait) }}
+
+    // initial render
+    render(courses);
+
+    // for accessibility: focus outlines on keyboard navigation only
+    (function(){
+      function handleFirstTab(e){ if(e.key === 'Tab'){ document.body.classList.add('user-is-tabbing'); window.removeEventListener('keydown', handleFirstTab) }}
+      window.addEventListener('keydown', handleFirstTab);
+    })();
+
+    /* Marcar curso como iniciado e salvar no localStorage */
+grid.addEventListener("click", e => {
+  if (e.target.textContent.trim() === "Inscrever") {
+    const card = e.target.closest(".card");
+    const id = Number(card.querySelector("button[data-id]").dataset.id);
+
+    const progresso = JSON.parse(localStorage.getItem("cursos_extra_progresso")) || {};
+    progresso[id] = true;
+
+    localStorage.setItem("cursos_extra_progresso", JSON.stringify(progresso));
+
+    alert("Curso iniciado! Agora ele aparece no seu painel.");
+  }
+});
+
+  </script>
+</body>
+</html>
