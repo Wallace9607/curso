@@ -612,11 +612,45 @@
 
       <!-- PROGRESSO -->
 <section id="progresso" class="section">
-  <div id="progresso-container" class="dynamic-container">
-    <h1>📈 Progresso</h1>
-    <p style="color:var(--muted)">Carregando progresso...</p>
+  <h1>📈 Progresso Geral</h1>
+  <p style="color:var(--muted)">Resumo automático do avanço no Bacharelado em Engenharia de Software.</p>
+
+  <!-- Painel principal -->
+  <div id="painelProgresso" 
+       style="margin-top:20px;display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
+
+    <!-- CARD: Progresso do Curso -->
+    <div class="card" style="padding:20px;">
+      <h2 style="margin:0 0 10px 0;">🎯 Progresso do Curso</h2>
+      <div id="progressPercent" style="font-size:38px;font-weight:700;margin-bottom:6px;">0%</div>
+      <div id="progressInfo" style="color:var(--muted);font-size:14px;">Carregando...</div>
+    </div>
+
+    <!-- CARD: Metas Semanais -->
+    <div class="card" style="padding:20px;">
+      <h2 style="margin:0 0 10px 0;">📝 Metas Semanais</h2>
+      <div id="goalsStats" style="font-size:16px;font-weight:600;margin-bottom:6px;">0 metas</div>
+      <div id="goalsInfo" style="color:var(--muted);font-size:14px;">Nenhuma meta criada ainda</div>
+    </div>
+
+    <!-- CARD: Semestres -->
+    <div class="card" style="padding:20px;">
+      <h2 style="margin:0 0 10px 0;">📚 Desempenho por Semestre</h2>
+      <div id="semesterStats" style="color:var(--muted);font-size:14px;">Carregando...</div>
+    </div>
+
+    <!-- CARD: Acessar Grade Interativa -->
+    <div class="card" style="padding:20px;text-align:center;">
+      <h2 style="margin:0 0 10px 0;">Abrir Grade Interativa</h2>
+      <button onclick="window.location.href='painel_dev.html'" 
+              style="margin-top:10px;padding:10px 16px;border-radius:10px;background:var(--accent);color:#000;border:none;cursor:pointer;font-weight:700;">
+        Abrir Painel Completo
+      </button>
+    </div>
+
   </div>
 </section>
+
 
 
     </div>
@@ -1288,8 +1322,78 @@ function initBibAddModal() {
 document.querySelector('[data-page="biblioteca"]').addEventListener("click", loadBiblioteca);
 document.querySelector('[data-page="biblioteca"]').addEventListener("click", initBibAddModal);
 
+function carregarProgressoCurso() {
+  const raw = localStorage.getItem("es_course_state_v1");
+  if (!raw) return;
 
+  const data = JSON.parse(raw);
+  const flat = data.semesters.flat();
+
+  const total = flat.length;
+  const done = flat.filter(x => x.done).length;
+  const pct = Math.round((done / total) * 100);
+
+  document.getElementById("progressPercent").textContent = pct + "%";
+  document.getElementById("progressInfo").textContent =
+    `${done} de ${total} disciplinas concluídas`;
+}
+
+function carregarMetas() {
+  const raw = localStorage.getItem("es_course_state_v1");
+  if (!raw) return;
+
+  const data = JSON.parse(raw);
+  const goals = data.goals || [];
+
+  const feitas = goals.filter(g => g.done).length;
+
+  document.getElementById("goalsStats").textContent =
+    `${goals.length} metas (${feitas} concluídas)`;
+
+  if (goals.length === 0) {
+    document.getElementById("goalsInfo").textContent = "Nenhuma meta criada ainda.";
+  } else {
+    document.getElementById("goalsInfo").textContent =
+      `Última meta: ${goals[goals.length - 1].text}`;
+  }
+}
+
+function carregarSemestres() {
+  const raw = localStorage.getItem("es_course_state_v1");
+  if (!raw) return;
+
+  const data = JSON.parse(raw);
+  const semesters = data.semesters;
+
+  let melhor = -1, pior = 999;
+  let melhorSem = "", piorSem = "";
+
+  semesters.forEach((sem, i) => {
+    const tot = sem.length;
+    const done = sem.filter(s => s.done).length;
+    const pct = Math.round((done / tot) * 100);
+
+    if (pct > melhor) {
+      melhor = pct;
+      melhorSem = `${i + 1}º semestre (${pct}%)`;
+    }
+    if (pct < pior) {
+      pior = pct;
+      piorSem = `${i + 1}º semestre (${pct}%)`;
+    }
+  });
+
+  document.getElementById("semesterStats").innerHTML =
+    `<b>Mais avançado:</b> ${melhorSem}<br>
+     <b>Mais atrasado:</b> ${piorSem}`;
+}
+
+// Inicializa tudo
+carregarProgressoCurso();
+carregarMetas();
+carregarSemestres();
 </script>
 
 </body>
 </html>
+
